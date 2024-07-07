@@ -4,15 +4,10 @@ provider "aws" {
   region     = var.region
 }
 
-resource "aws_instance" "example" {
-  ami           = lookup(var.amis, var.region)
-  instance_type = "t2.micro"
-
-  provisioner "local-exec" {
-    command = "echo ${aws_instance.example.public_ip} > ip_address.txt"
-  }
-}
-
-output "ip" {
-  value = aws_instance.example.public_ip
+module "ec2_app" {
+  source        = "./modules/ec2"
+  infra_env     = "prod"
+  infra_role    = "app"
+  instance_size = "t2.micro"
+  instance_ami  = lookup(var.amis, var.region)
 }
